@@ -4,6 +4,7 @@ import SummarySection from "./SummarySection";
 import CategoriesSection from "./CategoriesSection";
 import TransactionsSection from "./TransactionsSection";
 import GoalsSection from "./GoalsSection";
+import TrendsSection from "./TrendsSection";
 
 export default function DashboardPage() {
   const { params, setParams } = useDashboardParams();
@@ -57,6 +58,9 @@ export default function DashboardPage() {
 
       {/* Summary */}
       <SummarySection period={params.period} />
+
+      {/* Trends */}
+      <TrendsSection />
 
       {/* Main Content Grid */}
       <div className="grid md:grid-cols-2 gap-6">
