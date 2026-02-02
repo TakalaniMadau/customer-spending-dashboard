@@ -20,6 +20,26 @@ export function useCustomerProfile() {
   });
 }
 
+export function useSpendingSummary(period: string) {
+  return useQuery({
+    queryKey: ["customer", CUSTOMER_ID, "spending", "summary", period],
+    queryFn: () =>
+      fetcher<SpendingSummary>(
+        `/customers/${CUSTOMER_ID}/spending/summary?period=${period}`,
+      ),
+  });
+}
+
+export function useSpendingTrends(months: number = 12) {
+  return useQuery({
+    queryKey: ["customer", CUSTOMER_ID, "spending", "trends", months],
+    queryFn: () =>
+      fetcher<SpendingTrends>(
+        `/customers/${CUSTOMER_ID}/spending/trends?months=${months}`,
+      ),
+  });
+}
+
 export function useSpendingByCategory(params: {
   period: string;
   startDate?: string | null;
