@@ -188,7 +188,7 @@ export const handlers = [
     return HttpResponse.json(data);
   }),
 
-  http.get("/api/cutomers/:customerId/goals", () => {
+  http.get("/api/customers/:customerId/goals", () => {
     const data: GoalsResponse = {
       goals: [
         {
