@@ -60,7 +60,10 @@ export default function DashboardPage() {
       <SummarySection period={params.period} />
 
       {/* Trends */}
-      <TrendsSection />
+      <TrendsSection
+        months={params.months}
+        onMonthsChange={(months) => setParams({ months })}
+      />
 
       {/* Main Content Grid */}
       <div className="grid md:grid-cols-2 gap-6">

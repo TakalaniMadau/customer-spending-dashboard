@@ -67,7 +67,7 @@ export function useTransactions(params: {
   page: number;
   limit?: number;
 }) {
-  const limit = params.limit || 20;
+  const limit = params.limit || 5;
   const offset = (params.page - 1) * limit;
 
   const searchParams = new URLSearchParams();

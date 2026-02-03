@@ -8,6 +8,7 @@ export interface DashboardParams {
   endDate: string | null;
   sortBy: string | null;
   page: number;
+  months: number;
 }
 
 const DEFAULTS: DashboardParams = {
@@ -17,6 +18,7 @@ const DEFAULTS: DashboardParams = {
   endDate: null,
   sortBy: "date_desc",
   page: 1,
+  months: 12,
 };
 
 export function useDashboardParams() {
@@ -30,6 +32,9 @@ export function useDashboardParams() {
       endDate: searchParams.get("endDate") || DEFAULTS.endDate,
       sortBy: searchParams.get("sortBy") || DEFAULTS.sortBy,
       page: parseInt(searchParams.get("page") || DEFAULTS.page.toString()),
+      months: parseInt(
+        searchParams.get("months") || DEFAULTS.months.toString(),
+      ),
     };
   }, [searchParams]);
 

@@ -29,17 +29,54 @@ export const handlers = [
     const url = new URL(request.url);
     const period = url.searchParams.get("period") || "30d";
 
-    const data: SpendingSummary = {
-      period,
-      totalSpent: 4250.75,
-      transactionCount: 47,
-      averageTransaction: 90.44,
-      topCategory: "Groceries",
-      comparedToPrevious: {
-        spentChange: 12.5,
-        transactionChange: -3.2,
+    const periodData: Record<string, SpendingSummary> = {
+      "7d": {
+        period: "7d",
+        totalSpent: 892.45,
+        transactionCount: 12,
+        averageTransaction: 74.37,
+        topCategory: "Dining",
+        comparedToPrevious: {
+          spentChange: -5.2,
+          transactionChange: 8.3,
+        },
+      },
+      "30d": {
+        period: "30d",
+        totalSpent: 4250.75,
+        transactionCount: 47,
+        averageTransaction: 90.44,
+        topCategory: "Groceries",
+        comparedToPrevious: {
+          spentChange: 12.5,
+          transactionChange: -3.2,
+        },
+      },
+      "90d": {
+        period: "90d",
+        totalSpent: 12680.3,
+        transactionCount: 142,
+        averageTransaction: 89.3,
+        topCategory: "Groceries",
+        comparedToPrevious: {
+          spentChange: 8.7,
+          transactionChange: 4.1,
+        },
+      },
+      "1y": {
+        period: "1y",
+        totalSpent: 48920.6,
+        transactionCount: 547,
+        averageTransaction: 89.43,
+        topCategory: "Groceries",
+        comparedToPrevious: {
+          spentChange: 15.3,
+          transactionChange: 12.8,
+        },
       },
     };
+
+    const data = periodData[period] || periodData["30d"];
     return HttpResponse.json(data);
   }),
 
@@ -104,47 +141,164 @@ export const handlers = [
     return HttpResponse.json(data);
   }),
 
-  http.get("/api/customers/:customerId/spending/trends", () => {
+  http.get("/api/customers/:customerId/spending/trends", ({ request }) => {
+    const url = new URL(request.url);
+    const requestedMonths = Number(url.searchParams.get("months")) || 12;
+    const months = Math.min(Math.max(requestedMonths, 1), 24); // Clamp between 1-24
+
+    // Generate dynamic trend data for the requested number of months
+    const allTrends = [
+      {
+        month: "2023-01",
+        totalSpent: 3650.2,
+        transactionCount: 40,
+        averageTransaction: 91.26,
+      },
+      {
+        month: "2023-02",
+        totalSpent: 3420.15,
+        transactionCount: 36,
+        averageTransaction: 95.0,
+      },
+      {
+        month: "2023-03",
+        totalSpent: 3890.8,
+        transactionCount: 43,
+        averageTransaction: 90.48,
+      },
+      {
+        month: "2023-04",
+        totalSpent: 4010.25,
+        transactionCount: 41,
+        averageTransaction: 97.81,
+      },
+      {
+        month: "2023-05",
+        totalSpent: 3780.6,
+        transactionCount: 39,
+        averageTransaction: 96.94,
+      },
+      {
+        month: "2023-06",
+        totalSpent: 4120.45,
+        transactionCount: 44,
+        averageTransaction: 93.65,
+      },
+      {
+        month: "2023-07",
+        totalSpent: 3950.3,
+        transactionCount: 42,
+        averageTransaction: 94.05,
+      },
+      {
+        month: "2023-08",
+        totalSpent: 4280.75,
+        transactionCount: 46,
+        averageTransaction: 93.06,
+      },
+      {
+        month: "2023-09",
+        totalSpent: 3720.4,
+        transactionCount: 38,
+        averageTransaction: 97.91,
+      },
+      {
+        month: "2023-10",
+        totalSpent: 4050.9,
+        transactionCount: 43,
+        averageTransaction: 94.21,
+      },
+      {
+        month: "2023-11",
+        totalSpent: 4350.25,
+        transactionCount: 48,
+        averageTransaction: 90.63,
+      },
+      {
+        month: "2023-12",
+        totalSpent: 5120.8,
+        transactionCount: 55,
+        averageTransaction: 93.11,
+      },
+      {
+        month: "2024-01",
+        totalSpent: 3890.25,
+        transactionCount: 42,
+        averageTransaction: 92.62,
+      },
+      {
+        month: "2024-02",
+        totalSpent: 4150.8,
+        transactionCount: 38,
+        averageTransaction: 109.23,
+      },
+      {
+        month: "2024-03",
+        totalSpent: 3750.6,
+        transactionCount: 45,
+        averageTransaction: 83.35,
+      },
+      {
+        month: "2024-04",
+        totalSpent: 4200.45,
+        transactionCount: 39,
+        averageTransaction: 107.7,
+      },
+      {
+        month: "2024-05",
+        totalSpent: 3980.3,
+        transactionCount: 44,
+        averageTransaction: 90.46,
+      },
+      {
+        month: "2024-06",
+        totalSpent: 4250.75,
+        transactionCount: 47,
+        averageTransaction: 90.44,
+      },
+      {
+        month: "2024-07",
+        totalSpent: 4100.2,
+        transactionCount: 45,
+        averageTransaction: 91.12,
+      },
+      {
+        month: "2024-08",
+        totalSpent: 4320.55,
+        transactionCount: 48,
+        averageTransaction: 90.01,
+      },
+      {
+        month: "2024-09",
+        totalSpent: 3890.4,
+        transactionCount: 42,
+        averageTransaction: 92.63,
+      },
+      {
+        month: "2024-10",
+        totalSpent: 4180.65,
+        transactionCount: 46,
+        averageTransaction: 90.88,
+      },
+      {
+        month: "2024-11",
+        totalSpent: 4450.3,
+        transactionCount: 49,
+        averageTransaction: 90.82,
+      },
+      {
+        month: "2024-12",
+        totalSpent: 5280.9,
+        transactionCount: 58,
+        averageTransaction: 91.05,
+      },
+    ];
+
+    // Return the last N months of data
     const data: SpendingTrends = {
-      trends: [
-        {
-          month: "2024-01",
-          totalSpent: 3890.25,
-          transactionCount: 42,
-          averageTransaction: 92.62,
-        },
-        {
-          month: "2024-02",
-          totalSpent: 4150.8,
-          transactionCount: 38,
-          averageTransaction: 109.23,
-        },
-        {
-          month: "2024-03",
-          totalSpent: 3750.6,
-          transactionCount: 45,
-          averageTransaction: 83.35,
-        },
-        {
-          month: "2024-04",
-          totalSpent: 4200.45,
-          transactionCount: 39,
-          averageTransaction: 107.7,
-        },
-        {
-          month: "2024-05",
-          totalSpent: 3980.3,
-          transactionCount: 44,
-          averageTransaction: 90.46,
-        },
-        {
-          month: "2024-06",
-          totalSpent: 4250.75,
-          transactionCount: 47,
-          averageTransaction: 90.44,
-        },
-      ],
+      trends: allTrends.slice(-months),
     };
+
     return HttpResponse.json(data);
   }),
 
