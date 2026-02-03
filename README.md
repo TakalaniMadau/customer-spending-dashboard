@@ -1,73 +1,69 @@
 # React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A **URL-driven**, **production-ready** React dashboard for visualizing customer spending data. Built with a focus on simplicity, debuggability, and modern best practices.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🏗️ Architecture Principles
 
-## React Compiler
+This dashboard follows four guiding principles:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Principle                             | Implementation                                                  |
+| ------------------------------------- | --------------------------------------------------------------- |
+| **URL is the source of truth**        | All filters, periods, sorting, and pagination live in the URL   |
+| **No duplicated state**               | No `useState` mirroring URL values, no syncing effects          |
+| **Server data is derived, not owned** | React Query fetches based on URL params; UI never "stores" data |
+| **UI state stays local**              | Only modals, dropdowns, and hover states use local state        |
 
-## Expanding the ESLint configuration
+### Why URL-Driven?
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Shareable** — Copy the URL to share exact dashboard state
+- **Debuggable** — See all active filters in the address bar
+- **Bookmarkable** — Save specific views for quick access
+- **Back/Forward works** — Browser navigation just works
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 🚀 Getting Started
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Prerequisites
+
+- **Node.js** 20+
+- **pnpm** 10.x (or npm/yarn)
+- **Docker** (optional, for containerized deployment)
+
+### Local Development
+
+```bash
+# Clone the repository
+git clone [https://github.com/TakalaniMadau/customer-spending-dashboard.git](https://github.com/TakalaniMadau/customer-spending-dashboard.git)
+cd customer-spending-dashboard
+
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+app will be available at http://localhost:5173
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+# Build for production
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+pnpm build
+
+# Preview production build
+
+pnpm preview
+
+# Build and start the container
+
+docker compose up -d
+
+# View logs
+
+docker compose logs -f
+
+# Stop the container
+
+docker compose down

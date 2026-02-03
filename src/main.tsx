@@ -14,12 +14,10 @@ const queryClient = new QueryClient({
 });
 
 async function enableMocking() {
-  if (import.meta.env.DEV) {
-    const { worker } = await import("./mocks/browser");
-    return worker.start({
-      onUnhandledRequest: "bypass",
-    });
-  }
+  const { worker } = await import("./mocks/browser");
+  return worker.start({
+    onUnhandledRequest: "bypass",
+  });
 }
 
 enableMocking().then(() => {
