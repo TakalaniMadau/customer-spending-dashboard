@@ -24,6 +24,19 @@ This dashboard follows four guiding principles:
 
 ---
 
+## URL Parameters
+
+```
+/dashboard
+  ?period=30d              # 7d, 30d, 90d, 1y, or custom
+  &category=Groceries      # Filter by category
+  &startDate=2024-08-16    # Custom date range start
+  &endDate=2024-09-16      # Custom date range end
+  &sortBy=date_desc        # date_desc, date_asc, amount_desc, amount_asc
+  &page=1                  # Pagination
+  &months=12               # Trends chart months
+```
+
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -36,7 +49,7 @@ This dashboard follows four guiding principles:
 
 ```bash
 # Clone the repository
-git clone [https://github.com/TakalaniMadau/customer-spending-dashboard.git](https://github.com/TakalaniMadau/customer-spending-dashboard.git)
+git clone git@github.com:TakalaniMadau/customer-spending-dashboard.git
 cd customer-spending-dashboard
 
 # Install dependencies
