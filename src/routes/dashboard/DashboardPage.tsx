@@ -11,49 +11,92 @@ export default function DashboardPage() {
   const { data: filters } = useFilters();
 
   return (
-    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-      {/* Filters */}
-      <div className="flex flex-wrap gap-2">
-        {filters?.dateRangePresets.map((preset) => (
-          <button
-            key={preset.value}
-            onClick={() => setParams({ period: preset.value })}
-            className={`px-4 py-2 rounded ${
-              params.period === preset.value
-                ? "bg-blue-500 text-white"
-                : "bg-white border"
-            }`}
-          >
-            {preset.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Category Filter */}
-      <div className="flex flex-wrap gap-2">
-        <button
-          onClick={() => setParams({ category: null })}
-          className={`px-3 py-1 rounded text-sm ${
-            !params.category ? "bg-gray-800 text-white" : "bg-white border"
-          }`}
+    <div className="p-6 space-y-6 min-h-screen">
+      {/* Combined Filter Bar */}
+      <div className="flex flex-wrap items-center gap-4 relative z-10">
+        <select
+          id="period-select"
+          value={params.period}
+          onChange={(e) => {
+            setParams({
+              period: e.target.value,
+              startDate: null,
+              endDate: null,
+            });
+          }}
+          className="px-3 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2f70ef] focus:border-[#2f70ef] cursor-pointer"
         >
-          All Categories
-        </button>
-        {filters?.categories.map((cat) => (
+          {filters?.dateRangePresets.map((preset) => (
+            <option key={preset.value} value={preset.value}>
+              {preset.label}
+            </option>
+          ))}
+          <option value="custom">Custom Range</option>
+        </select>
+
+        {params.period === "custom" && (
+          <>
+            <div className="flex items-center gap-2">
+              <label htmlFor="start-date" className="text-sm text-gray-600">
+                From
+              </label>
+              <input
+                type="date"
+                id="start-date"
+                value={params.startDate || ""}
+                onChange={(e) =>
+                  setParams({ startDate: e.target.value || null })
+                }
+                className="px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2f70ef] focus:border-[#2f70ef]"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <label htmlFor="end-date" className="text-sm text-gray-600">
+                To
+              </label>
+              <input
+                type="date"
+                id="end-date"
+                value={params.endDate || ""}
+                onChange={(e) => setParams({ endDate: e.target.value || null })}
+                className="px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2f70ef] focus:border-[#2f70ef]"
+              />
+            </div>
+          </>
+        )}
+
+        <select
+          id="category-select"
+          value={params.category || ""}
+          onChange={(e) => setParams({ category: e.target.value || null })}
+          className="px-3 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2f70ef] focus:border-[#2f70ef] cursor-pointer"
+        >
+          <option value="">All Categories</option>
+          {filters?.categories.map((cat) => (
+            <option key={cat.name} value={cat.name}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
+
+        {(params.category ||
+          params.period !== "30d" ||
+          params.startDate ||
+          params.endDate) && (
           <button
-            key={cat.name}
-            onClick={() => setParams({ category: cat.name })}
-            className={`px-3 py-1 rounded text-sm ${
-              params.category === cat.name ? "text-white" : "bg-white border"
-            }`}
-            style={{
-              backgroundColor:
-                params.category === cat.name ? cat.color : undefined,
-            }}
+            onClick={() =>
+              setParams({
+                period: "30d",
+                category: null,
+                startDate: null,
+                endDate: null,
+              })
+            }
+            className="px-3 py-1.5 text-sm font-medium text-white bg-[#2f70ef] border border-[#2f70ef] rounded-lg hover:bg-[#2559c7]"
           >
-            {cat.name}
+            Reset
           </button>
-        ))}
+        )}
       </div>
 
       {/* Summary */}

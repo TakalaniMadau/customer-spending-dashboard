@@ -37,28 +37,14 @@ export default function TrendsSection({
     <section className="bg-white p-6 rounded-lg shadow">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">Spending Trends</h2>
-        <div className="flex gap-1">
-          <button
-            onClick={() => onMonthsChange(12)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
-              months === 12
-                ? "bg-red-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            12 Months
-          </button>
-          <button
-            onClick={() => onMonthsChange(24)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
-              months === 24
-                ? "bg-red-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            24 Months
-          </button>
-        </div>
+        <select
+          value={months}
+          onChange={(e) => onMonthsChange(Number(e.target.value))}
+          className="px-3 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00466E] focus:border-[#00466E] cursor-pointer"
+        >
+          <option value={12}>Last 12 Months</option>
+          <option value={24}>Last 24 Months</option>
+        </select>
       </div>
 
       <div className="h-64">

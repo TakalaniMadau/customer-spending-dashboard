@@ -80,63 +80,172 @@ export const handlers = [
     return HttpResponse.json(data);
   }),
 
-  http.get("/api/customers/:customerId/spending/categories", () => {
+  http.get("/api/customers/:customerId/spending/categories", ({ request }) => {
+    const url = new URL(request.url);
+    const startDate = url.searchParams.get("startDate");
+    const endDate = url.searchParams.get("endDate");
+
+    // Base category data with transaction dates for filtering
+    const categoryTransactions = [
+      {
+        category: "Groceries",
+        amount: 245.8,
+        date: "2024-09-16",
+        color: "#FF6B6B",
+        icon: "shopping-cart",
+      },
+      {
+        category: "Groceries",
+        amount: 189.5,
+        date: "2024-09-10",
+        color: "#FF6B6B",
+        icon: "shopping-cart",
+      },
+      {
+        category: "Entertainment",
+        amount: 199.0,
+        date: "2024-09-15",
+        color: "#4ECDC4",
+        icon: "film",
+      },
+      {
+        category: "Entertainment",
+        amount: 79.99,
+        date: "2024-09-09",
+        color: "#4ECDC4",
+        icon: "film",
+      },
+      {
+        category: "Transportation",
+        amount: 85.5,
+        date: "2024-09-14",
+        color: "#45B7D1",
+        icon: "car",
+      },
+      {
+        category: "Transportation",
+        amount: 650.0,
+        date: "2024-09-08",
+        color: "#45B7D1",
+        icon: "car",
+      },
+      {
+        category: "Transportation",
+        amount: 120.0,
+        date: "2024-09-02",
+        color: "#45B7D1",
+        icon: "car",
+      },
+      {
+        category: "Dining",
+        amount: 320.0,
+        date: "2024-09-13",
+        color: "#F7DC6F",
+        icon: "utensils",
+      },
+      {
+        category: "Dining",
+        amount: 285.0,
+        date: "2024-09-07",
+        color: "#F7DC6F",
+        icon: "utensils",
+      },
+      {
+        category: "Dining",
+        amount: 156.0,
+        date: "2024-09-03",
+        color: "#F7DC6F",
+        icon: "utensils",
+      },
+      {
+        category: "Shopping",
+        amount: 450.8,
+        date: "2024-09-12",
+        color: "#BB8FCE",
+        icon: "shopping-bag",
+      },
+      {
+        category: "Shopping",
+        amount: 899.0,
+        date: "2024-09-06",
+        color: "#BB8FCE",
+        icon: "shopping-bag",
+      },
+      {
+        category: "Shopping",
+        amount: 342.5,
+        date: "2024-09-04",
+        color: "#BB8FCE",
+        icon: "shopping-bag",
+      },
+      {
+        category: "Utilities",
+        amount: 1250.0,
+        date: "2024-09-11",
+        color: "#85C1E9",
+        icon: "zap",
+      },
+      {
+        category: "Utilities",
+        amount: 599.0,
+        date: "2024-09-05",
+        color: "#85C1E9",
+        icon: "zap",
+      },
+    ];
+
+    // Filter by date range
+    let filtered = categoryTransactions;
+    if (startDate) {
+      const start = new Date(startDate);
+      filtered = filtered.filter((t) => new Date(t.date) >= start);
+    }
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      filtered = filtered.filter((t) => new Date(t.date) <= end);
+    }
+
+    // Aggregate by category
+    const categoryMap = new Map<
+      string,
+      { amount: number; count: number; color: string; icon: string }
+    >();
+    filtered.forEach((t) => {
+      const existing = categoryMap.get(t.category) || {
+        amount: 0,
+        count: 0,
+        color: t.color,
+        icon: t.icon,
+      };
+      existing.amount += t.amount;
+      existing.count += 1;
+      categoryMap.set(t.category, existing);
+    });
+
+    const totalAmount = filtered.reduce((sum, t) => sum + t.amount, 0);
+
+    const categories = Array.from(categoryMap.entries())
+      .map(([name, data]) => ({
+        name,
+        amount: Math.round(data.amount * 100) / 100,
+        percentage:
+          totalAmount > 0
+            ? Math.round((data.amount / totalAmount) * 1000) / 10
+            : 0,
+        transactionCount: data.count,
+        color: data.color,
+        icon: data.icon,
+      }))
+      .sort((a, b) => b.amount - a.amount);
+
     const data: SpendingByCategory = {
       dateRange: {
-        startDate: "2024-08-16",
-        endDate: "2024-09-16",
+        startDate: startDate || "2024-08-16",
+        endDate: endDate || "2024-09-16",
       },
-      totalAmount: 4250.75,
-      categories: [
-        {
-          name: "Groceries",
-          amount: 1250.3,
-          percentage: 29.4,
-          transactionCount: 15,
-          color: "#FF6B6B",
-          icon: "shopping-cart",
-        },
-        {
-          name: "Entertainment",
-          amount: 890.2,
-          percentage: 20.9,
-          transactionCount: 8,
-          color: "#4ECDC4",
-          icon: "film",
-        },
-        {
-          name: "Transportation",
-          amount: 680.45,
-          percentage: 16.0,
-          transactionCount: 12,
-          color: "#45B7D1",
-          icon: "car",
-        },
-        {
-          name: "Dining",
-          amount: 520.3,
-          percentage: 12.2,
-          transactionCount: 9,
-          color: "#F7DC6F",
-          icon: "utensils",
-        },
-        {
-          name: "Shopping",
-          amount: 450.8,
-          percentage: 10.6,
-          transactionCount: 6,
-          color: "#BB8FCE",
-          icon: "shopping-bag",
-        },
-        {
-          name: "Utilities",
-          amount: 458.7,
-          percentage: 10.8,
-          transactionCount: 3,
-          color: "#85C1E9",
-          icon: "zap",
-        },
-      ],
+      totalAmount: Math.round(totalAmount * 100) / 100,
+      categories,
     };
     return HttpResponse.json(data);
   }),
@@ -304,39 +413,207 @@ export const handlers = [
 
   http.get("/api/customers/:customerId/transactions", ({ request }) => {
     const url = new URL(request.url);
-    const limit = Number(url.searchParams.get("limit")) || 20;
+    const limit = Number(url.searchParams.get("limit")) || 5;
     const offset = Number(url.searchParams.get("offset")) || 0;
+    const startDate = url.searchParams.get("startDate");
+    const endDate = url.searchParams.get("endDate");
+
+    const allTransactions = [
+      {
+        id: "txn_001",
+        date: "2024-09-16T14:30:00Z",
+        merchant: "Pick n Pay",
+        category: "Groceries",
+        amount: 245.8,
+        description: "Weekly groceries",
+        paymentMethod: "Credit Card",
+        icon: "shopping-cart",
+        categoryColor: "#FF6B6B",
+      },
+      {
+        id: "txn_002",
+        date: "2024-09-15T10:15:00Z",
+        merchant: "Netflix",
+        category: "Entertainment",
+        amount: 199.0,
+        description: "Monthly subscription",
+        paymentMethod: "Debit Order",
+        icon: "film",
+        categoryColor: "#4ECDC4",
+      },
+      {
+        id: "txn_003",
+        date: "2024-09-14T18:45:00Z",
+        merchant: "Uber",
+        category: "Transportation",
+        amount: 85.5,
+        description: "Ride to office",
+        paymentMethod: "Credit Card",
+        icon: "car",
+        categoryColor: "#45B7D1",
+      },
+      {
+        id: "txn_004",
+        date: "2024-09-13T12:30:00Z",
+        merchant: "Nando's",
+        category: "Dining",
+        amount: 320.0,
+        description: "Lunch with team",
+        paymentMethod: "Credit Card",
+        icon: "utensils",
+        categoryColor: "#F7DC6F",
+      },
+      {
+        id: "txn_005",
+        date: "2024-09-12T16:20:00Z",
+        merchant: "Woolworths",
+        category: "Shopping",
+        amount: 450.8,
+        description: "Clothing purchase",
+        paymentMethod: "Credit Card",
+        icon: "shopping-bag",
+        categoryColor: "#BB8FCE",
+      },
+      {
+        id: "txn_006",
+        date: "2024-09-11T09:00:00Z",
+        merchant: "City Power",
+        category: "Utilities",
+        amount: 1250.0,
+        description: "Electricity bill",
+        paymentMethod: "Debit Order",
+        icon: "zap",
+        categoryColor: "#85C1E9",
+      },
+      {
+        id: "txn_007",
+        date: "2024-09-10T15:45:00Z",
+        merchant: "Checkers",
+        category: "Groceries",
+        amount: 189.5,
+        description: "Household items",
+        paymentMethod: "Credit Card",
+        icon: "shopping-cart",
+        categoryColor: "#FF6B6B",
+      },
+      {
+        id: "txn_008",
+        date: "2024-09-09T20:00:00Z",
+        merchant: "Spotify",
+        category: "Entertainment",
+        amount: 79.99,
+        description: "Music subscription",
+        paymentMethod: "Debit Order",
+        icon: "film",
+        categoryColor: "#4ECDC4",
+      },
+      {
+        id: "txn_009",
+        date: "2024-09-08T11:30:00Z",
+        merchant: "Shell",
+        category: "Transportation",
+        amount: 650.0,
+        description: "Fuel",
+        paymentMethod: "Credit Card",
+        icon: "car",
+        categoryColor: "#45B7D1",
+      },
+      {
+        id: "txn_010",
+        date: "2024-09-07T19:15:00Z",
+        merchant: "Spur",
+        category: "Dining",
+        amount: 285.0,
+        description: "Family dinner",
+        paymentMethod: "Credit Card",
+        icon: "utensils",
+        categoryColor: "#F7DC6F",
+      },
+      {
+        id: "txn_011",
+        date: "2024-09-06T14:00:00Z",
+        merchant: "Takealot",
+        category: "Shopping",
+        amount: 899.0,
+        description: "Electronics",
+        paymentMethod: "Credit Card",
+        icon: "shopping-bag",
+        categoryColor: "#BB8FCE",
+      },
+      {
+        id: "txn_012",
+        date: "2024-09-05T08:30:00Z",
+        merchant: "Vodacom",
+        category: "Utilities",
+        amount: 599.0,
+        description: "Mobile contract",
+        paymentMethod: "Debit Order",
+        icon: "zap",
+        categoryColor: "#85C1E9",
+      },
+      {
+        id: "txn_013",
+        date: "2024-09-04T17:00:00Z",
+        merchant: "Dis-Chem",
+        category: "Shopping",
+        amount: 342.5,
+        description: "Pharmacy",
+        paymentMethod: "Credit Card",
+        icon: "shopping-bag",
+        categoryColor: "#BB8FCE",
+      },
+      {
+        id: "txn_014",
+        date: "2024-09-03T13:45:00Z",
+        merchant: "Mugg & Bean",
+        category: "Dining",
+        amount: 156.0,
+        description: "Coffee meeting",
+        paymentMethod: "Credit Card",
+        icon: "utensils",
+        categoryColor: "#F7DC6F",
+      },
+      {
+        id: "txn_015",
+        date: "2024-09-02T10:00:00Z",
+        merchant: "Gautrain",
+        category: "Transportation",
+        amount: 120.0,
+        description: "Train ticket",
+        paymentMethod: "Credit Card",
+        icon: "car",
+        categoryColor: "#45B7D1",
+      },
+    ];
+
+    let filteredTransactions = allTransactions;
+    if (startDate) {
+      const start = new Date(startDate);
+      filteredTransactions = filteredTransactions.filter(
+        (txn) => new Date(txn.date) >= start,
+      );
+    }
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999); // Include entire end day
+      filteredTransactions = filteredTransactions.filter(
+        (txn) => new Date(txn.date) <= end,
+      );
+    }
+
+    const paginatedTransactions = filteredTransactions.slice(
+      offset,
+      offset + limit,
+    );
+    const total = filteredTransactions.length;
 
     const data: TransactionsResponse = {
-      transactions: [
-        {
-          id: "txn_123456",
-          date: "2024-09-16T14:30:00Z",
-          merchant: "Pick n Pay",
-          category: "Groceries",
-          amount: 245.8,
-          description: "Weekly groceries",
-          paymentMethod: "Credit Card",
-          icon: "shopping-cart",
-          categoryColor: "#FF6B6B",
-        },
-        {
-          id: "txn_123457",
-          date: "2024-09-15T10:15:00Z",
-          merchant: "Netflix",
-          category: "Entertainment",
-          amount: 199.0,
-          description: "Monthly subscription",
-          paymentMethod: "Debit Order",
-          icon: "film",
-          categoryColor: "#4ECDC4",
-        },
-      ],
+      transactions: paginatedTransactions,
       pagination: {
-        total: 1250,
+        total,
         limit,
         offset,
-        hasMore: true,
+        hasMore: offset + limit < total,
       },
     };
     return HttpResponse.json(data);
@@ -362,6 +639,15 @@ export const handlers = [
           percentageUsed: 96.72,
           daysRemaining: 12,
           status: "warning",
+        },
+        {
+          id: "goal_003",
+          category: "Dining",
+          monthlyBudget: 800.0,
+          currentSpent: 520.0,
+          percentageUsed: 65.0,
+          daysRemaining: 12,
+          status: "on_track",
         },
       ],
     };

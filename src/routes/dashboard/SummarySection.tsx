@@ -22,32 +22,32 @@ export default function SummarySection({ period }: SummarySectionProps) {
 
   return (
     <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div className="bg-white p-4 rounded-lg shadow">
-        <p className="text-sm text-gray-500">Total Spent</p>
+      <div className="bg-[#2f70ef] p-4 rounded-lg shadow text-white">
+        <p className="text-sm">Total Spent</p>
         <p className="text-2xl font-bold">R{totalSpent.toLocaleString()}</p>
         <p
-          className={`text-sm ${comparedToPrevious.spentChange >= 0 ? "text-red-500" : "text-green-500"}`}
+          className={`text-sm px-2 py-1 rounded mt-2 ${comparedToPrevious.spentChange >= 0 ? "text-red-500 bg-white" : "text-green-500 bg-white"}`}
         >
           {comparedToPrevious.spentChange >= 0 ? "+" : ""}
           {comparedToPrevious.spentChange}% vs previous
         </p>
       </div>
-      <div className="bg-white p-4 rounded-lg shadow">
-        <p className="text-sm text-gray-500">Transactions</p>
+      <div className="bg-[#0033a0] p-4 rounded-lg shadow text-white">
+        <p className="text-sm">Transactions</p>
         <p className="text-2xl font-bold">{transactionCount}</p>
         <p
-          className={`text-sm ${comparedToPrevious.transactionChange >= 0 ? "text-green-500" : "text-red-500"}`}
+          className={`text-sm px-2 py-1 rounded mt-2 ${comparedToPrevious.transactionChange >= 0 ? "text-green-500 bg-white" : "text-red-500 bg-white"}`}
         >
           {comparedToPrevious.transactionChange >= 0 ? "+" : ""}
           {comparedToPrevious.transactionChange}%
         </p>
       </div>
-      <div className="bg-white p-4 rounded-lg shadow">
-        <p className="text-sm text-gray-500">Avg Transaction</p>
+      <div className="bg-[#5d737e] p-4 rounded-lg shadow text-white">
+        <p className="text-sm">Avg Transaction</p>
         <p className="text-2xl font-bold">R{averageTransaction.toFixed(2)}</p>
       </div>
-      <div className="bg-white p-4 rounded-lg shadow">
-        <p className="text-sm text-gray-500">Top Category</p>
+      <div className="bg-[#e61414] p-4 rounded-lg shadow text-white">
+        <p className="text-sm">Top Category</p>
         <p className="text-2xl font-bold">{topCategory}</p>
       </div>
     </section>
